@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.7.6</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+
+  <groupId>org.apache.syncope</groupId>
+  <artifactId>syncope-persistence-cassandra</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Apache Syncope Core Persistence Cassandra</name>
+  <description>Apache Syncope Core Persistence Cassandra</description>
+
+  <properties>
+    <syncope.version>3.0.1-SNAPSHOT</syncope.version>
+    
+    <adminUser>admin</adminUser>
+    <anonymousUser>anonymous</anonymousUser>
+    <adminPassword>DE088591C00CC98B36F5ADAAF7DA2B004CF7F2FE7BBB45B766B6409876E2F3DB13C7905C6AA59464</adminPassword>
+    <!-- static keys, only used for build: generated overlays will override during archetype:generate -->
+    <anonymousKey>anonymousKey</anonymousKey>
+    <secretKey>1abcdefghilmnopqrstuvz2!</secretKey>
+    <jwsKey>ZW7pRixehFuNUtnY5Se47IemgMryTzazPPJ9CGX5LTCmsOJpOgHAQEuPQeV9A28f</jwsKey>
+    
+    <targetJdk>11</targetJdk>
+    <rootpom.basedir>${basedir}</rootpom.basedir>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-cassandra</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.syncope.core</groupId>
+      <artifactId>syncope-core-spring</artifactId>
+      <version>${syncope.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>${targetJdk}</release>
+          <useIncrementalCompilation>false</useIncrementalCompilation>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+          <compilerArgs>
+            <arg>-Xlint:unchecked</arg>
+            <arg>-parameters</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <propertiesEncoding>${project.build.sourceEncoding}</propertiesEncoding>
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+          <delimiters>
+            <delimiter>${*}</delimiter>
+          </delimiters>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <CORE_PROPERTIES>classpath:core-test.properties</CORE_PROPERTIES>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>    
+  </build>
+</project>
