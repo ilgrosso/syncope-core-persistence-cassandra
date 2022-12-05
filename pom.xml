@@ -19,6 +19,8 @@
   <properties>
     <syncope.version>3.0.1-SNAPSHOT</syncope.version>
     
+    <testcontainers.version>1.17.6</testcontainers.version>
+
     <adminUser>admin</adminUser>
     <anonymousUser>anonymous</anonymousUser>
     <adminPassword>DE088591C00CC98B36F5ADAAF7DA2B004CF7F2FE7BBB45B766B6409876E2F3DB13C7905C6AA59464</adminPassword>
@@ -53,6 +55,18 @@
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency> 
+      <groupId>org.testcontainers</groupId> 
+      <artifactId>junit-jupiter</artifactId>
+      <version>${testcontainers.version}</version>
+      <scope>test</scope> 
+    </dependency>
+    <dependency> 
+      <groupId>org.testcontainers</groupId> 
+      <artifactId>cassandra</artifactId>
+      <version>${testcontainers.version}</version>
+      <scope>test</scope> 
     </dependency>
   </dependencies>
 

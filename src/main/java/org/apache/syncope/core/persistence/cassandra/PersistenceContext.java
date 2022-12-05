@@ -18,13 +18,37 @@
  */
 package org.apache.syncope.core.persistence.cassandra;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+import org.apache.syncope.common.lib.SyncopeConstants;
 import org.apache.syncope.core.persistence.api.DomainRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.data.cassandra.config.CqlSessionFactoryBean;
+import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
+@EnableCassandraRepositories("org.apache.syncope.core.persistence.cassandra.dao")
 @Configuration(proxyBeanMethods = false)
 public class PersistenceContext {
+
+    @ConditionalOnMissingBean
+    @Bean
+    public CqlSessionFactoryBean cqlSessionFactory(final Environment env) {
+        CqlSessionFactoryBean session = new CqlSessionFactoryBean();
+        session.setContactPoints(env.getProperty("spring.data.cassandra.contact-points"));
+        session.setPort(env.getProperty("spring.data.cassandra.port", int.class));
+        session.setLocalDatacenter(env.getProperty("spring.data.cassandra.local-datacenter"));
+        session.setKeyspaceName(SyncopeConstants.MASTER_DOMAIN);
+        return session;
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public CassandraTemplate cassandraTemplate(final CqlSession cqlSession) {
+        return new CassandraTemplate(cqlSession);
+    }
 
     @ConditionalOnMissingBean
     @Bean
