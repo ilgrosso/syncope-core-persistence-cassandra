@@ -20,7 +20,6 @@ package org.apache.syncope.core.persistence.cassandra.entity;
 
 import javax.validation.constraints.NotNull;
 import org.apache.syncope.common.lib.types.AttrSchemaType;
-import org.apache.syncope.core.persistence.api.entity.AnyTypeClass;
 import org.apache.syncope.core.persistence.api.entity.DerSchema;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -31,21 +30,8 @@ public class CassandraDerSchema extends AbstractSchema implements DerSchema {
 
     public static final String TABLE = "DerSchema";
 
-    private CassandraAnyTypeClass anyTypeClass;
-
     @NotNull
     private String expression;
-
-    @Override
-    public AnyTypeClass getAnyTypeClass() {
-        return anyTypeClass;
-    }
-
-    @Override
-    public void setAnyTypeClass(final AnyTypeClass anyTypeClass) {
-        checkType(anyTypeClass, CassandraAnyTypeClass.class);
-        this.anyTypeClass = (CassandraAnyTypeClass) anyTypeClass;
-    }
 
     @Override
     public String getExpression() {

@@ -18,11 +18,35 @@
  */
 package org.apache.syncope.core.persistence.cassandra.dao;
 
+import java.util.List;
+import org.apache.syncope.common.lib.types.AnyTypeKind;
+import org.apache.syncope.core.persistence.api.dao.AnyTypeDAO;
+import org.apache.syncope.core.persistence.api.entity.AnyType;
+import org.apache.syncope.core.persistence.api.entity.AnyTypeClass;
 import org.apache.syncope.core.persistence.cassandra.entity.CassandraAnyType;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CassandraAnyTypeDAO extends CrudRepository<CassandraAnyType, String> {
+public interface CassandraAnyTypeDAO extends CassandraRepository<CassandraAnyType, String>, AnyTypeDAO {
 
+    @Override
+    public default AnyType find(final String key) {
+        return findById(key).orElse(null);
+    }
+
+    @Override
+    public default AnyType findUser() {
+        return find(AnyTypeKind.USER.name());
+    }
+
+    @Override
+    public default AnyType findGroup() {
+        return find(AnyTypeKind.GROUP.name());
+    }
+
+    @Override
+    public default List<? extends AnyType> findByTypeClass(final AnyTypeClass anyTypeClass) {
+        return List.of();
+    }
 }

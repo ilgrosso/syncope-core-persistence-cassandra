@@ -19,10 +19,10 @@
 package org.apache.syncope.core.persistence.cassandra.dao;
 
 import org.apache.syncope.core.persistence.cassandra.entity.CassandraImplementation;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CassandraImplementationDAO extends CrudRepository<CassandraImplementation, String> {
+public interface CassandraImplementationDAO extends CassandraRepository<CassandraImplementation, String> {
 
 }

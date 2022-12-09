@@ -1,10 +1,17 @@
 package org.apache.syncope.core.persistence.cassandra;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.apache.syncope.common.lib.SyncopeConstants;
+import org.apache.syncope.common.lib.types.AnyTypeKind;
+import org.apache.syncope.core.persistence.api.dao.AnyTypeDAO;
+import org.apache.syncope.core.persistence.api.entity.AnyType;
+import org.apache.syncope.core.persistence.api.entity.EntityFactory;
 import org.apache.syncope.core.persistence.cassandra.ApacheSyncopeCorePersistenceCassandraApplicationTests.Initializer;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -43,7 +50,24 @@ class ApacheSyncopeCorePersistenceCassandraApplicationTests {
         }
     }
 
+    @Autowired
+    private EntityFactory entityFactory;
+
+    @Autowired
+    private AnyTypeDAO anyTypeDAO;
+
     @Test
     void contextLoads() {
+        AnyType user = entityFactory.newEntity(AnyType.class);
+        user.setKey(AnyTypeKind.USER.name());
+        user.setKind(AnyTypeKind.USER);
+
+        user = anyTypeDAO.save(user);
+        assertNotNull(user);
+
+        //assertNotNull(anyTypeDAO.find(AnyTypeKind.USER.name()));
+        
+        //assertNotNull(anyTypeDAO.findUser());
+        //assertNull(anyTypeDAO.findGroup());
     }
 }

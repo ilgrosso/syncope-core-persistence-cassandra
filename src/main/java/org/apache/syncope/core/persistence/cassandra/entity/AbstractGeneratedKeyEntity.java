@@ -15,14 +15,23 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
-package org.apache.syncope.core.persistence.cassandra.dao;
+ */package org.apache.syncope.core.persistence.cassandra.entity;
 
-import org.apache.syncope.core.persistence.cassandra.entity.CassandraVirSchema;
-import org.springframework.data.cassandra.repository.CassandraRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 
-@Repository
-public interface CassandraVirSchemaDAO extends CassandraRepository<CassandraVirSchema, String> {
+public abstract class AbstractGeneratedKeyEntity extends AbstractEntity {
 
+    private static final long serialVersionUID = 821537874069666593L;
+
+    @PrimaryKey
+    private String id;
+
+    @Override
+    public String getKey() {
+        return id;
+    }
+
+    public void setKey(final String key) {
+        this.id = key;
+    }
 }

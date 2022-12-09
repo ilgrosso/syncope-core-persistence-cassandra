@@ -16,13 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.syncope.core.persistence.cassandra.dao;
+package org.apache.syncope.core.persistence.cassandra.converter;
 
-import org.apache.syncope.core.persistence.cassandra.entity.CassandraVirSchema;
-import org.springframework.data.cassandra.repository.CassandraRepository;
-import org.springframework.stereotype.Repository;
+import java.util.Locale;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.convert.ReadingConverter;
 
-@Repository
-public interface CassandraVirSchemaDAO extends CassandraRepository<CassandraVirSchema, String> {
+@ReadingConverter
+public class LocaleReadConverter implements Converter<String, Locale> {
 
+    @Override
+    public Locale convert(final String source) {
+        return Locale.forLanguageTag(source);
+    }
 }

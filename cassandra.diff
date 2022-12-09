@@ -1,0 +1,164 @@
+diff --git a/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/AnyTypeDAO.java b/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/AnyTypeDAO.java
+index 1c07bcee71..6ed83dddb8 100644
+--- a/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/AnyTypeDAO.java
++++ b/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/AnyTypeDAO.java
+@@ -30,11 +30,11 @@ public interface AnyTypeDAO extends DAO<AnyType> {
+ 
+     AnyType findGroup();
+ 
+-    List<AnyType> findByTypeClass(AnyTypeClass anyTypeClass);
++    List<? extends AnyType> findByTypeClass(AnyTypeClass anyTypeClass);
+ 
+-    List<AnyType> findAll();
++    List<? extends AnyType> findAll();
+ 
+     AnyType save(AnyType anyType);
+ 
+-    void delete(String key);
++    void delete(AnyType anyType);
+ }
+diff --git a/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/DAO.java b/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/DAO.java
+index 9052401e3a..9961c4d093 100644
+--- a/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/DAO.java
++++ b/core/persistence-api/src/main/java/org/apache/syncope/core/persistence/api/dao/DAO.java
+@@ -21,8 +21,4 @@ package org.apache.syncope.core.persistence.api.dao;
+ import org.apache.syncope.core.persistence.api.entity.Entity;
+ 
+ public interface DAO<E extends Entity> {
+-
+-    void refresh(E entity);
+-
+-    void detach(E entity);
+ }
+diff --git a/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/AbstractDAO.java b/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/AbstractDAO.java
+index bcefd68db7..4b45fcc0c5 100644
+--- a/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/AbstractDAO.java
++++ b/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/AbstractDAO.java
+@@ -43,14 +43,4 @@ public abstract class AbstractDAO<E extends Entity> implements DAO<E> {
+                 orElseThrow(() -> new IllegalStateException(
+                 "Could not find EntityManager for domain " + AuthContextUtils.getDomain()));
+     }
+-
+-    @Override
+-    public void refresh(final E entity) {
+-        entityManager().refresh(entity);
+-    }
+-
+-    @Override
+-    public void detach(final E entity) {
+-        entityManager().detach(entity);
+-    }
+ }
+diff --git a/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/JPAAnyTypeDAO.java b/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/JPAAnyTypeDAO.java
+index 5c8a19907d..a3a25393dc 100644
+--- a/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/JPAAnyTypeDAO.java
++++ b/core/persistence-jpa/src/main/java/org/apache/syncope/core/persistence/jpa/dao/JPAAnyTypeDAO.java
+@@ -77,14 +77,9 @@ public class JPAAnyTypeDAO extends AbstractDAO<AnyType> implements AnyTypeDAO {
+     }
+ 
+     @Override
+-    public void delete(final String key) {
+-        AnyType anyType = find(key);
+-        if (anyType == null) {
+-            return;
+-        }
+-
++    public void delete(final AnyType anyType) {
+         if (anyType.equals(findUser()) || anyType.equals(findGroup())) {
+-            throw new IllegalArgumentException(key + " cannot be deleted");
++            throw new IllegalArgumentException(anyType.getKey() + " cannot be deleted");
+         }
+ 
+         remediationDAO.findByAnyType(anyType).forEach(remediation -> {
+diff --git a/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/AbstractTest.java b/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/AbstractTest.java
+index 1da1bc45b7..325ea17246 100644
+--- a/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/AbstractTest.java
++++ b/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/AbstractTest.java
+@@ -20,6 +20,7 @@ package org.apache.syncope.core.persistence.jpa;
+ 
+ import javax.persistence.EntityManager;
+ import org.apache.syncope.core.persistence.api.entity.AnyUtilsFactory;
++import org.apache.syncope.core.persistence.api.entity.Entity;
+ import org.apache.syncope.core.persistence.api.entity.EntityFactory;
+ import org.apache.syncope.core.persistence.api.entity.PlainAttr;
+ import org.apache.syncope.core.persistence.api.entity.PlainAttrValue;
+@@ -53,6 +54,14 @@ public abstract class AbstractTest {
+         return entityManager;
+     }
+ 
++    public void refresh(final Entity entity) {
++        entityManager().refresh(entity);
++    }
++
++    public void detach(final Entity entity) {
++        entityManager().detach(entity);
++    }
++
+     protected <T extends PlainAttr<?>> T findPlainAttr(final String key, final Class<T> reference) {
+         return reference.cast(entityManager().find(JPAPlainAttrDAO.getEntityReference(reference), key));
+     }
+diff --git a/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/inner/AnyTypeTest.java b/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/inner/AnyTypeTest.java
+index 1605e9c884..b32bfc3bb4 100644
+--- a/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/inner/AnyTypeTest.java
++++ b/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/inner/AnyTypeTest.java
+@@ -66,7 +66,7 @@ public class AnyTypeTest extends AbstractTest {
+ 
+     @Test
+     public void findAll() {
+-        List<AnyType> list = anyTypeDAO.findAll();
++        List<? extends AnyType> list = anyTypeDAO.findAll();
+         assertFalse(list.isEmpty());
+     }
+ 
+@@ -110,12 +110,12 @@ public class AnyTypeTest extends AbstractTest {
+         AnyType otherType = anyTypeDAO.find("PRINTER");
+         assertNotNull(otherType);
+ 
+-        anyTypeDAO.delete(otherType.getKey());
++        anyTypeDAO.delete(otherType);
+         assertNull(anyTypeDAO.find("PRINTER"));
+     }
+ 
+     @Test
+     public void deleteInvalid() {
+-        assertThrows(IllegalArgumentException.class, () -> anyTypeDAO.delete(AnyTypeKind.USER.name()));
++        assertThrows(IllegalArgumentException.class, () -> anyTypeDAO.delete(anyTypeDAO.findUser()));
+     }
+ }
+diff --git a/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/outer/ResourceTest.java b/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/outer/ResourceTest.java
+index 8b9dc51a0a..b184b0d898 100644
+--- a/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/outer/ResourceTest.java
++++ b/core/persistence-jpa/src/test/java/org/apache/syncope/core/persistence/jpa/outer/ResourceTest.java
+@@ -142,8 +142,8 @@ public class ResourceTest extends AbstractTest {
+         assertNotNull(actual.getProvisionByAnyType(AnyTypeKind.USER.name()).get().getMapping());
+ 
+         entityManager().flush();
+-        resourceDAO.detach(actual);
+-        connInstanceDAO.detach(connector);
++        detach(actual);
++        detach(connector);
+ 
+         // assign the new resource to an user
+         User user = userDAO.findByUsername("rossini");
+@@ -156,7 +156,7 @@ public class ResourceTest extends AbstractTest {
+         // retrieve resource
+         resource = resourceDAO.find(actual.getKey());
+         assertNotNull(resource);
+-        resourceDAO.refresh(resource);
++        refresh(resource);
+ 
+         // check connector
+         connector = connInstanceDAO.find("88a7a819-dab5-46b4-9b90-0b9769eabdb8");
+diff --git a/core/provisioning-java/src/main/java/org/apache/syncope/core/provisioning/java/data/AnyTypeDataBinderImpl.java b/core/provisioning-java/src/main/java/org/apache/syncope/core/provisioning/java/data/AnyTypeDataBinderImpl.java
+index 57b7907afa..2ddd3516eb 100644
+--- a/core/provisioning-java/src/main/java/org/apache/syncope/core/provisioning/java/data/AnyTypeDataBinderImpl.java
++++ b/core/provisioning-java/src/main/java/org/apache/syncope/core/provisioning/java/data/AnyTypeDataBinderImpl.java
+@@ -135,7 +135,7 @@ public class AnyTypeDataBinderImpl implements AnyTypeDataBinder {
+     public AnyTypeTO delete(final AnyType anyType) {
+         AnyTypeTO deleted = getAnyTypeTO(anyType);
+ 
+-        anyTypeDAO.delete(anyType.getKey());
++        anyTypeDAO.delete(anyType);
+ 
+         final Set<String> removed = EntitlementsHolder.getInstance().removeFor(deleted.getKey());
+ 
