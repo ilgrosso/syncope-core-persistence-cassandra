@@ -1,2 +1,2 @@
-# syncope-ext-core-persistence-cassandra
+# syncope-core-persistence-cassandra
 Experimenting Syncope Core persistence with Cassandra
