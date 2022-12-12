@@ -19,11 +19,13 @@
 package org.apache.syncope.core.persistence.cassandra;
 
 import java.util.List;
+import javax.validation.Validator;
 import org.apache.syncope.common.lib.SyncopeConstants;
 import org.apache.syncope.core.persistence.api.DomainRegistry;
 import org.apache.syncope.core.persistence.api.entity.EntityFactory;
 import org.apache.syncope.core.persistence.cassandra.converter.LocaleReadConverter;
 import org.apache.syncope.core.persistence.cassandra.converter.LocaleWriteConverter;
+import org.apache.syncope.core.persistence.cassandra.dao.SyncopeCassandraRepository;
 import org.apache.syncope.core.persistence.cassandra.entity.CassandraEntityFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,8 +36,11 @@ import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-@EnableCassandraRepositories("org.apache.syncope.core.persistence.cassandra.dao")
+@EnableCassandraRepositories(
+        basePackageClasses = SyncopeCassandraRepository.class,
+        repositoryBaseClass = SyncopeCassandraRepository.class)
 @Configuration(proxyBeanMethods = false)
 public class PersistenceContext extends AbstractCassandraConfiguration {
 
@@ -71,6 +76,11 @@ public class PersistenceContext extends AbstractCassandraConfiguration {
     @Override
     public CassandraCustomConversions customConversions() {
         return new CassandraCustomConversions(List.of(new LocaleReadConverter(), new LocaleWriteConverter()));
+    }
+
+    @Bean
+    public Validator localValidatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
     }
 
     @ConditionalOnMissingBean

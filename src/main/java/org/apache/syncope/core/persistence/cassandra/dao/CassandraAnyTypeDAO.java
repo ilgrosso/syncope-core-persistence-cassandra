@@ -31,11 +31,6 @@ import org.springframework.stereotype.Repository;
 public interface CassandraAnyTypeDAO extends CassandraRepository<CassandraAnyType, String>, AnyTypeDAO {
 
     @Override
-    public default AnyType find(final String key) {
-        return findById(key).orElse(null);
-    }
-
-    @Override
     public default AnyType findUser() {
         return find(AnyTypeKind.USER.name());
     }

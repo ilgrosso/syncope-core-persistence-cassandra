@@ -25,6 +25,7 @@ import org.apache.syncope.common.keymaster.client.api.DomainOps;
 import org.apache.syncope.core.persistence.api.DomainRegistry;
 import org.apache.syncope.core.persistence.api.ImplementationLookup;
 import org.apache.syncope.core.provisioning.api.ConnectorManager;
+import org.apache.syncope.core.spring.ApplicationContextProvider;
 import org.apache.syncope.core.spring.security.DefaultPasswordGenerator;
 import org.apache.syncope.core.spring.security.PasswordGenerator;
 import org.apache.syncope.core.spring.security.SecurityProperties;
@@ -74,6 +75,11 @@ public class PersistenceTestContext {
     @Bean
     public SecurityProperties securityProperties() {
         return new SecurityProperties();
+    }
+
+    @Bean
+    public ApplicationContextProvider applicationContextProvider() {
+        return new ApplicationContextProvider();
     }
 
     @Bean

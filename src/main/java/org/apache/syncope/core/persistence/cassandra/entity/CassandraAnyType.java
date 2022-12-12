@@ -29,6 +29,7 @@ import org.apache.syncope.core.persistence.api.entity.AnyTypeClass;
 import org.apache.syncope.core.persistence.cassandra.dao.CassandraAnyTypeClassDAO;
 import org.apache.syncope.core.spring.ApplicationContextProvider;
 import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.util.CollectionUtils;
 
 @Table
 public class CassandraAnyType extends AbstractProvidedKeyEntity implements AnyType {
@@ -53,7 +54,7 @@ public class CassandraAnyType extends AbstractProvidedKeyEntity implements AnyTy
     @Override
     public boolean add(final AnyTypeClass anyTypeClass) {
         checkType(anyTypeClass, CassandraAnyTypeClass.class);
-        return classes.contains(anyTypeClass.getKey()) || this.classes.add(anyTypeClass.getKey());
+        return classes.contains(anyTypeClass.getKey()) || classes.add(anyTypeClass.getKey());
     }
 
     @Override
@@ -63,5 +64,13 @@ public class CassandraAnyType extends AbstractProvidedKeyEntity implements AnyTy
                 findById(c).orElse(null)).
                 filter(Objects::nonNull).
                 collect(Collectors.toList());
+    }
+
+    public CassandraAnyType withClasses(final List<String> classes) {
+        this.classes.clear();
+        if (!CollectionUtils.isEmpty(classes)) {
+            this.classes.addAll(classes);
+        }
+        return this;
     }
 }

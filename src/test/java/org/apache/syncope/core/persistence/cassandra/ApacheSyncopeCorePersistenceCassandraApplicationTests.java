@@ -1,6 +1,7 @@
 package org.apache.syncope.core.persistence.cassandra;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -65,9 +66,9 @@ class ApacheSyncopeCorePersistenceCassandraApplicationTests {
         user = anyTypeDAO.save(user);
         assertNotNull(user);
 
-        //assertNotNull(anyTypeDAO.find(AnyTypeKind.USER.name()));
-        
-        //assertNotNull(anyTypeDAO.findUser());
-        //assertNull(anyTypeDAO.findGroup());
+        assertNotNull(anyTypeDAO.find(AnyTypeKind.USER.name()));
+
+        assertNotNull(anyTypeDAO.findUser());
+        assertNull(anyTypeDAO.findGroup());
     }
 }
