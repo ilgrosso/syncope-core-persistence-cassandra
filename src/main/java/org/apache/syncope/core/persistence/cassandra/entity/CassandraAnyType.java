@@ -31,10 +31,12 @@ import org.apache.syncope.core.spring.ApplicationContextProvider;
 import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.util.CollectionUtils;
 
-@Table
+@Table(CassandraAnyType.TABLE)
 public class CassandraAnyType extends AbstractProvidedKeyEntity implements AnyType {
 
     private static final long serialVersionUID = 2668267884059219835L;
+
+    public static final String TABLE = "AnyType";
 
     @NotNull
     private AnyTypeKind kind;

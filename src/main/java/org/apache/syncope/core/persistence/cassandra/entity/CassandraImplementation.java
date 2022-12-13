@@ -23,7 +23,7 @@ import org.apache.syncope.common.lib.types.ImplementationEngine;
 import org.apache.syncope.core.persistence.api.entity.Implementation;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-@Table
+@Table(CassandraImplementation.TABLE)
 public class CassandraImplementation extends AbstractProvidedKeyEntity implements Implementation {
 
     public static final String TABLE = "Implementation";

@@ -31,13 +31,14 @@ import org.apache.syncope.core.persistence.cassandra.dao.CassandraPlainSchemaDAO
 import org.apache.syncope.core.persistence.cassandra.dao.CassandraVirSchemaDAO;
 import org.apache.syncope.core.spring.ApplicationContextProvider;
 import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.util.CollectionUtils;
 
-@Table
+@Table(CassandraAnyTypeClass.TABLE)
 public class CassandraAnyTypeClass extends AbstractProvidedKeyEntity implements AnyTypeClass {
 
     private static final long serialVersionUID = -1750247153774475453L;
 
-    private final List<String> types = new ArrayList<>();
+    public static final String TABLE = "AnyTypeClass";
 
     private final List<String> plainSchemas = new ArrayList<>();
 
@@ -60,6 +61,14 @@ public class CassandraAnyTypeClass extends AbstractProvidedKeyEntity implements 
                 collect(Collectors.toList());
     }
 
+    public CassandraAnyTypeClass withPlainSchemas(final List<String> plainSchemas) {
+        this.plainSchemas.clear();
+        if (!CollectionUtils.isEmpty(plainSchemas)) {
+            this.plainSchemas.addAll(plainSchemas);
+        }
+        return this;
+    }
+
     @Override
     public boolean add(final DerSchema schema) {
         checkType(schema, CassandraDerSchema.class);
@@ -75,6 +84,14 @@ public class CassandraAnyTypeClass extends AbstractProvidedKeyEntity implements 
                 collect(Collectors.toList());
     }
 
+    public CassandraAnyTypeClass withDerSchemas(final List<String> derSchemas) {
+        this.derSchemas.clear();
+        if (!CollectionUtils.isEmpty(derSchemas)) {
+            this.derSchemas.addAll(derSchemas);
+        }
+        return this;
+    }
+
     @Override
     public boolean add(final VirSchema schema) {
         checkType(schema, CassandraVirSchema.class);
@@ -88,5 +105,13 @@ public class CassandraAnyTypeClass extends AbstractProvidedKeyEntity implements 
                 findById(c).orElse(null)).
                 filter(Objects::nonNull).
                 collect(Collectors.toList());
+    }
+
+    public CassandraAnyTypeClass withVirSchemas(final List<String> virSchemas) {
+        this.virSchemas.clear();
+        if (!CollectionUtils.isEmpty(virSchemas)) {
+            this.virSchemas.addAll(virSchemas);
+        }
+        return this;
     }
 }

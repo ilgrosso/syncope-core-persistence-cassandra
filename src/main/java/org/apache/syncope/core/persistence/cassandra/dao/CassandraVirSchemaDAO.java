@@ -18,11 +18,36 @@
  */
 package org.apache.syncope.core.persistence.cassandra.dao;
 
+import java.util.Collection;
+import java.util.List;
+import org.apache.syncope.core.persistence.api.dao.VirSchemaDAO;
+import org.apache.syncope.core.persistence.api.entity.AnyTypeClass;
+import org.apache.syncope.core.persistence.api.entity.ExternalResource;
+import org.apache.syncope.core.persistence.api.entity.VirSchema;
 import org.apache.syncope.core.persistence.cassandra.entity.CassandraVirSchema;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CassandraVirSchemaDAO extends CassandraRepository<CassandraVirSchema, String> {
+public interface CassandraVirSchemaDAO extends CassandraRepository<CassandraVirSchema, String>, VirSchemaDAO {
 
+    @Override
+    public default List<String> find(final ExternalResource resource) {
+        return List.of();
+    }
+
+    @Override
+    public default List<? extends VirSchema> find(String resource, String anyType) {
+        return List.of();
+    }
+
+    @Override
+    public default List<? extends VirSchema> findByKeyword(final String keyword) {
+        return List.of();
+    }
+
+    @Override
+    public default List<? extends VirSchema> findByAnyTypeClasses(final Collection<AnyTypeClass> anyTypeClasses) {
+        return List.of();
+    }
 }

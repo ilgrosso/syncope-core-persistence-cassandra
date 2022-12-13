@@ -22,14 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.syncope.common.keymaster.client.api.ConfParamOps;
 import org.apache.syncope.common.keymaster.client.api.DomainOps;
+import org.apache.syncope.core.persistence.api.DomainHolder;
 import org.apache.syncope.core.persistence.api.DomainRegistry;
 import org.apache.syncope.core.persistence.api.ImplementationLookup;
+import org.apache.syncope.core.persistence.api.content.ContentLoader;
 import org.apache.syncope.core.provisioning.api.ConnectorManager;
-import org.apache.syncope.core.spring.ApplicationContextProvider;
 import org.apache.syncope.core.spring.security.DefaultPasswordGenerator;
 import org.apache.syncope.core.spring.security.PasswordGenerator;
 import org.apache.syncope.core.spring.security.SecurityProperties;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -37,7 +39,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
-@Import(PersistenceContext.class)
+@Import({ PersistenceContext.class, MasterDomain.class })
 @Configuration(proxyBeanMethods = false)
 public class PersistenceTestContext {
 
@@ -73,13 +75,17 @@ public class PersistenceTestContext {
     }
 
     @Bean
-    public SecurityProperties securityProperties() {
-        return new SecurityProperties();
+    public TestLoader testLoader(
+            final DomainHolder domainHolder,
+            final ContentLoader contentLoader,
+            final ConfigurableApplicationContext ctx) {
+
+        return new TestLoader(domainHolder, contentLoader, ctx);
     }
 
     @Bean
-    public ApplicationContextProvider applicationContextProvider() {
-        return new ApplicationContextProvider();
+    public SecurityProperties securityProperties() {
+        return new SecurityProperties();
     }
 
     @Bean

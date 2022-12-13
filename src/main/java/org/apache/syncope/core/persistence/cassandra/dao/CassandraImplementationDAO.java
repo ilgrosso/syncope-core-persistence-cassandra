@@ -18,11 +18,19 @@
  */
 package org.apache.syncope.core.persistence.cassandra.dao;
 
+import java.util.List;
+import org.apache.syncope.core.persistence.api.dao.ImplementationDAO;
+import org.apache.syncope.core.persistence.api.entity.Implementation;
 import org.apache.syncope.core.persistence.cassandra.entity.CassandraImplementation;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CassandraImplementationDAO extends CassandraRepository<CassandraImplementation, String> {
+public interface CassandraImplementationDAO
+        extends CassandraRepository<CassandraImplementation, String>, ImplementationDAO {
 
+    @Override
+    public default List<? extends Implementation> findByTypeAndKeyword(final String type, final String keyword) {
+        return List.of();
+    }
 }

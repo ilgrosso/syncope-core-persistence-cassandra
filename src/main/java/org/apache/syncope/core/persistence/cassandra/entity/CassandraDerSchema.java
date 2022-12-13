@@ -23,7 +23,7 @@ import org.apache.syncope.common.lib.types.AttrSchemaType;
 import org.apache.syncope.core.persistence.api.entity.DerSchema;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-@Table
+@Table(CassandraDerSchema.TABLE)
 public class CassandraDerSchema extends AbstractSchema implements DerSchema {
 
     private static final long serialVersionUID = -6173643493348674060L;

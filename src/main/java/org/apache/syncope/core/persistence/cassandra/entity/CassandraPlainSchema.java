@@ -29,10 +29,12 @@ import org.apache.syncope.core.persistence.api.entity.PlainSchema;
 import org.apache.syncope.core.spring.ApplicationContextProvider;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-@Table
+@Table(CassandraPlainSchema.TABLE)
 public class CassandraPlainSchema extends AbstractSchema implements PlainSchema {
 
     private static final long serialVersionUID = -8621028596062054739L;
+
+    public static final String TABLE = "PlainSchema";
 
     @NotNull
     private AttrSchemaType type = AttrSchemaType.String;

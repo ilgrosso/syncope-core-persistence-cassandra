@@ -18,11 +18,25 @@
  */
 package org.apache.syncope.core.persistence.cassandra.dao;
 
+import java.util.Collection;
+import java.util.List;
+import org.apache.syncope.core.persistence.api.dao.DerSchemaDAO;
+import org.apache.syncope.core.persistence.api.entity.AnyTypeClass;
+import org.apache.syncope.core.persistence.api.entity.DerSchema;
 import org.apache.syncope.core.persistence.cassandra.entity.CassandraDerSchema;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CassandraDerSchemaDAO extends CassandraRepository<CassandraDerSchema, String> {
+public interface CassandraDerSchemaDAO extends CassandraRepository<CassandraDerSchema, String>, DerSchemaDAO {
 
+    @Override
+    public default List<? extends DerSchema> findByAnyTypeClasses(final Collection<AnyTypeClass> anyTypeClasses) {
+        return List.of();
+    }
+
+    @Override
+    public default List<? extends DerSchema> findByKeyword(final String keyword) {
+        return List.of();
+    }
 }

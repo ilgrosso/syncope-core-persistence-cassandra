@@ -28,10 +28,12 @@ import org.apache.syncope.core.persistence.api.entity.VirSchema;
 import org.apache.syncope.core.spring.ApplicationContextProvider;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-@Table
+@Table(CassandraVirSchema.TABLE)
 public class CassandraVirSchema extends AbstractSchema implements VirSchema {
 
     private static final long serialVersionUID = 3274006935328590141L;
+
+    public static final String TABLE = "VirSchema";
 
     private boolean readonly = false;
 
@@ -89,6 +91,10 @@ public class CassandraVirSchema extends AbstractSchema implements VirSchema {
         return Optional.ofNullable(anyType).
                 map(c -> ApplicationContextProvider.getBeanFactory().getBean(AnyTypeDAO.class).find(c)).
                 orElse(null);
+    }
+
+    public void setAnyType(final String anyType) {
+        this.anyType = anyType;
     }
 
     @Override

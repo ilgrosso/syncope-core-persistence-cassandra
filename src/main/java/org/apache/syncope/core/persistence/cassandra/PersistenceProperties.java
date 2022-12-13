@@ -16,13 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.syncope.core.persistence.cassandra.dao;
+package org.apache.syncope.core.persistence.cassandra;
 
-import org.apache.syncope.core.persistence.api.dao.AnyTypeClassDAO;
-import org.apache.syncope.core.persistence.cassandra.entity.CassandraAnyTypeClass;
-import org.springframework.data.cassandra.repository.CassandraRepository;
-import org.springframework.stereotype.Repository;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
-@Repository
-public interface CassandraAnyTypeClassDAO extends CassandraRepository<CassandraAnyTypeClass, String>, AnyTypeClassDAO {
+@ConfigurationProperties("persistence")
+public class PersistenceProperties {
+
+    @NestedConfigurationProperty
+    private final List<DomainProperties> domain = new ArrayList<>();
+
+    public List<DomainProperties> getDomain() {
+        return domain;
+    }
 }

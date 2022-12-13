@@ -21,8 +21,10 @@ package org.apache.syncope.core.persistence.cassandra;
 import java.util.List;
 import javax.validation.Validator;
 import org.apache.syncope.common.lib.SyncopeConstants;
+import org.apache.syncope.core.persistence.api.DomainHolder;
 import org.apache.syncope.core.persistence.api.DomainRegistry;
 import org.apache.syncope.core.persistence.api.entity.EntityFactory;
+import org.apache.syncope.core.persistence.cassandra.content.XMLContentLoader;
 import org.apache.syncope.core.persistence.cassandra.converter.LocaleReadConverter;
 import org.apache.syncope.core.persistence.cassandra.converter.LocaleWriteConverter;
 import org.apache.syncope.core.persistence.cassandra.dao.SyncopeCassandraRepository;
@@ -34,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.SchemaAction;
+import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -87,6 +90,18 @@ public class PersistenceContext extends AbstractCassandraConfiguration {
     @Bean
     public EntityFactory entityFactory() {
         return new CassandraEntityFactory();
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public XMLContentLoader xmlContentLoader(final CassandraOperations operations, final Environment env) {
+        return new XMLContentLoader(operations, env);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public DomainHolder domainHolder() {
+        return new CassandraDomainHolder();
     }
 
     @ConditionalOnMissingBean

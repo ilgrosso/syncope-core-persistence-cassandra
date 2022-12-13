@@ -16,13 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.syncope.core.persistence.cassandra.dao;
+package org.apache.syncope.core.persistence.cassandra;
 
-import org.apache.syncope.core.persistence.api.dao.AnyTypeClassDAO;
-import org.apache.syncope.core.persistence.cassandra.entity.CassandraAnyTypeClass;
-import org.springframework.data.cassandra.repository.CassandraRepository;
-import org.springframework.stereotype.Repository;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.sql.DataSource;
+import org.apache.syncope.core.persistence.api.DomainHolder;
 
-@Repository
-public interface CassandraAnyTypeClassDAO extends CassandraRepository<CassandraAnyTypeClass, String>, AnyTypeClassDAO {
+public class CassandraDomainHolder implements DomainHolder {
+
+    private final Map<String, DataSource> domains = new ConcurrentHashMap<>();
+
+    @Override
+    public Map<String, DataSource> getDomains() {
+        return domains;
+    }
 }
